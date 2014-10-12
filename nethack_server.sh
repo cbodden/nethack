@@ -3,7 +3,7 @@
 OS=$(grep ^NAME /etc/os-release | cut -d= -f2 | sed 's/"//g')
 DOMAIN="SET THIS TO YOUR NETHACK SERVER ADDRESS"
 # DOMAIN="nethack.alt.org"
-LPATH="~/nhsh"
+LPATH="${HOME}/nhsh"
 TMP_FILE=$(mktemp --tmpdir nhsh.$$.XXXXXXXXXX)
 trap 'printf "${NAME}: Quitting.\n\n" 1>&2 ; \
    rm -rf ${TMP_FILE} ; exit 1' 0 1 2 3 9 15
