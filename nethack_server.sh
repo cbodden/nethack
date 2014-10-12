@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
 OS=$(grep ^NAME /etc/os-release | cut -d= -f2 | sed 's/"//g')
-#DOMAIN="SET THIS TO YOUR NETHACK SERVER ADDRESS"
 DOMAIN="test.nethack.local"
-# DOMAIN="nethack.alt.org"
 LPATH="${HOME}/nhsh"
 TMP_FILE=$(mktemp --tmpdir nhsh.$$.XXXXXXXXXX)
 trap 'printf "${NAME}: Quitting.\n\n" 1>&2 ; \
@@ -16,7 +14,7 @@ case "${OS}" in
       sys-apps/groff sys-libs/ncurses net-misc/netkit-telnetd dev-db/sqlite
       sys-apps/xinetd"
     for _PCKG in ${_LIST}; do
-        if [ "$(echo $(eix -I ${_PCKG} | grep matches | wc -l))" == "1" ]; then
+      if [ "$(echo $(eix -I ${_PCKG} | grep matches | wc -l))" == "1" ]; then
         _S_LIST="${_PCKG} ${_S_LIST}"
       fi
     done
@@ -76,11 +74,13 @@ case "${OS}" in
   'Gentoo')
     tar cf - /usr/lib64/libncurses* |\
       sudo tar xf - -C /opt/nethack/${DOMAIN}/
-    TELNETD="telnetd" ;;
+    TELNETD="telnetd"
+    XINETD="sudo /etc/init.d/xinetd restart" ;;
   'Ubuntu')
     tar cf - /lib/x86_64-linux-gnu/libncurses* |\
       sudo tar xf - -C /opt/nethack/${DOMAIN}/
-    TELNETD="in.telnetd" ;;
+    TELNETD="in.telnetd"
+    XINETD="sudo service xinetd restart" ;;
 esac
 
 if [[ ! -e /etc/xinet.d/nethack ]]; then
@@ -95,9 +95,5 @@ if [[ ! -e /etc/xinet.d/nethack ]]; then
   rlimit_cpu  = 120
 }" >> ${TMP_FILE}
   sudo cp ${TMP_FILE} /etc/xinetd.d/nethack
-  case "${OS}" in
-      'CentOS') ;;
-      'Gentoo') sudo /etc/init.d/xinetd restart ;;
-      'Ubuntu') sudo service xinetd restart ;;
-  esac
+  $(XINETD)
 fi
