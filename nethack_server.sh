@@ -84,7 +84,7 @@ if [[ ! -e /etc/xinet.d/nethack ]]; then
   server      = /usr/sbin/in.telnetd
   server_args = -h -L /opt/nethack/${DOMAIN}/dgamelaunch
   rlimit_cpu  = 120
-}" >> ${TMP_FILE} 
+}" >> ${TMP_FILE}
   sudo cp ${TMP_FILE} /etc/xinetd.d/nethack
   sudo service xinetd restart
 fi
