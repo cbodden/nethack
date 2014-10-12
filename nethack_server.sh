@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 OS=$(grep ^NAME /etc/os-release | cut -d= -f2 | sed 's/"//g')
-DOMAIN="nethack.poa.nyc"
+DOMAIN="SET THIS TO YOUR NETHACK SERVER ADDRESS"
 # DOMAIN="nethack.alt.org"
 LPATH="~/nhsh"
 TMP_FILE=$(mktemp --tmpdir nhsh.$$.XXXXXXXXXX)
