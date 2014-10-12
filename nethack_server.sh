@@ -86,7 +86,11 @@ if [[ ! -e /etc/xinet.d/nethack ]]; then
   rlimit_cpu  = 120
 }" >> ${TMP_FILE}
   sudo cp ${TMP_FILE} /etc/xinetd.d/nethack
-  sudo service xinetd restart
+  case "${OS}" in
+      'CentOS') ;;
+      'Gentoo') sudo /etc/init.d/xinetd restart ;;
+      'Ubuntu') sudo service xinetd restart ;;
+  esac
 fi
 
 rm -rf ${LPATH}
