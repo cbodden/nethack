@@ -1,19 +1,26 @@
 #!/usr/bin/env bash
 
 OS=$(grep ^NAME /etc/os-release | cut -d= -f2 | sed 's/"//g')
-DOMAIN="SET THIS TO YOUR NETHACK SERVER ADDRESS"
+#DOMAIN="SET THIS TO YOUR NETHACK SERVER ADDRESS"
+DOMAIN="test.nethack.local"
 # DOMAIN="nethack.alt.org"
 LPATH="${HOME}/nhsh"
 TMP_FILE=$(mktemp --tmpdir nhsh.$$.XXXXXXXXXX)
 trap 'printf "${NAME}: Quitting.\n\n" 1>&2 ; \
-   rm -rf ${TMP_FILE} ; exit 1' 0 1 2 3 9 15
+   rm -rf ${TMP_FILE} ; rm -rf ${LPATH} ; exit 1' 0 1 2 3 9 15
 
 case "${OS}" in
   'CentOS') ;;
   'Gentoo')
-    sudo emerge -v sys-devel/autoconf sys-devel/bison sys-devel/flex \
-      dev-vcs/git sys-apps/groff sys-libs/ncurses net-misc/netkit-telnetd \
-      dev-db/sqlite sys-apps/xinetd ;;
+    _LIST="sys-devel/autoconf sys-devel/bison sys-devel/flex dev-vcs/git
+      sys-apps/groff sys-libs/ncurses net-misc/netkit-telnetd dev-db/sqlite
+      sys-apps/xinetd"
+    for _PCKG in ${_LIST}; do
+        if [ "$(echo $(eix -I ${_PCKG} | grep matches | wc -l))" == "1" ]; then
+        _S_LIST="${_PCKG} ${_S_LIST}"
+      fi
+    done
+    [[ ! -z ${_S_LIST} ]] && sudo emerge -v $(echo ${_S_LIST}) ;;
   'Ubuntu')
     sudo apt-get update
     sudo apt-get install -y autoconf bison build-essential bsdmainutils \
@@ -68,10 +75,12 @@ case "${OS}" in
   'CentOS') ;;
   'Gentoo')
     tar cf - /usr/lib64/libncurses* |\
-      sudo tar xf - -C /opt/nethack/${DOMAIN}/ ;;
+      sudo tar xf - -C /opt/nethack/${DOMAIN}/
+    TELNETD="telnetd" ;;
   'Ubuntu')
     tar cf - /lib/x86_64-linux-gnu/libncurses* |\
-      sudo tar xf - -C /opt/nethack/${DOMAIN}/ ;;
+      sudo tar xf - -C /opt/nethack/${DOMAIN}/
+    TELNETD="in.telnetd" ;;
 esac
 
 if [[ ! -e /etc/xinet.d/nethack ]]; then
@@ -81,7 +90,7 @@ if [[ ! -e /etc/xinet.d/nethack ]]; then
   protocol    = tcp
   user        = root
   wait        = no
-  server      = /usr/sbin/in.telnetd
+  server      = /usr/sbin/${TELNETD}
   server_args = -h -L /opt/nethack/${DOMAIN}/dgamelaunch
   rlimit_cpu  = 120
 }" >> ${TMP_FILE}
@@ -92,5 +101,3 @@ if [[ ! -e /etc/xinet.d/nethack ]]; then
       'Ubuntu') sudo service xinetd restart ;;
   esac
 fi
-
-rm -rf ${LPATH}
