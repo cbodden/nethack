@@ -10,7 +10,7 @@ trap 'printf "${NAME}: Quitting.\n\n" 1>&2 ; \
 case "${OS}" in
   'CentOS') ;;
   'Gentoo')
-    _LIST="sys-devel/autoconf sys-devel/bison sys-devel/flex dev-vcs/git
+    _LIST="sys-devel/autoconf\ sys-devel/bison sys-devel/flex dev-vcs/git
       sys-apps/groff sys-libs/ncurses net-misc/netkit-telnetd dev-db/sqlite
       sys-apps/xinetd"
     for _PCKG in ${_LIST}; do
@@ -95,5 +95,5 @@ if [[ ! -e /etc/xinet.d/nethack ]]; then
   rlimit_cpu  = 120
 }" >> ${TMP_FILE}
   sudo cp ${TMP_FILE} /etc/xinetd.d/nethack
-  $(XINETD)
+  $(echo ${XINETD})
 fi
