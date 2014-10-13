@@ -67,18 +67,21 @@ rm -rf nh343-nao
 
 sudo touch /opt/nethack/${DOMAIN}/nh343/perm
 sudo mkdir /opt/nethack/${DOMAIN}/nh343/save
-sudo chmod 777 /opt/nethack/${DOMAIN}/nh343/save
 
 case "${OS}" in
   'CentOS') ;;
   'Gentoo')
     tar cf - /usr/lib64/libncurses* |\
       sudo tar xf - -C /opt/nethack/${DOMAIN}/
+    ### temp fix until i get user/groups fixed
+    sudo chown -R root:root /opt/nethack/
+    sudo chmod -R 777 /opt/nethack/
     TELNETD="telnetd"
     XINETD="sudo /etc/init.d/xinetd restart" ;;
   'Ubuntu')
     tar cf - /lib/x86_64-linux-gnu/libncurses* |\
       sudo tar xf - -C /opt/nethack/${DOMAIN}/
+    sudo chmod 777 /opt/nethack/${DOMAIN}/nh343/save
     TELNETD="in.telnetd"
     XINETD="sudo service xinetd restart" ;;
 esac
