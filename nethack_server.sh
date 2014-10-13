@@ -76,6 +76,7 @@ case "${OS}" in
     ### temp fix until i get user/groups fixed
     sudo chown -R root:root /opt/nethack/
     sudo chmod -R 777 /opt/nethack/
+    sudo sed -i -e '/^[ \t]only/s/only/#only/' /etc/xinetd.conf
     TELNETD="telnetd"
     XINETD="sudo /etc/init.d/xinetd restart" ;;
   'Ubuntu')
